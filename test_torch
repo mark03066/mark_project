@@ -1,0 +1,38 @@
+# 导入必要的库
+import torch
+import torch.nn as nn
+import matplotlib.pyplot as plt
+# 定义网络参数
+n_in, n_h, n_out, batch_size = 10, 5, 1, 10
+# 创建随机输入数据和目标数据
+x = torch.randn(batch_size, n_in) # 输入数据
+y = torch.tensor([[1.0], [0.0], [0.0], [1.0], [1.0], [1.0], [0.0], [0.0], [1.0], [1.0]]) # 目标输出
+# 定义神经网络模型
+model = nn.Sequential(
+   nn.Linear(n_in, n_h), # 输入层到隐藏层
+   nn.ReLU(), # 隐藏层激活函数
+   nn.Linear(n_h, n_out), # 隐藏层到输出层
+   nn.Sigmoid() # 输出层激活函数
+)
+# 定义损失函数和优化器
+criterion = nn.MSELoss() # 均方误差损失函数
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01) # 随机梯度下降优化器
+# 训练模型
+losses = []
+for epoch in range(50): # 训练50轮
+   y_pred = model(x) # 前向传播
+   loss = criterion(y_pred, y) # 计算损失
+   losses.append(loss.item()) # 记录损失值
+   print(f'Epoch [{epoch+1}/50], Loss: {loss.item():.4f}')
+   optimizer.zero_grad() # 清零梯度
+   loss.backward() # 反向传播
+   optimizer.step() # 更新参数
+# 可视化损失变化
+plt.figure(figsize=(8, 5))
+plt.plot(range(1, 51), losses, label='Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Training Loss Over Epochs')
+plt.legend()
+plt.grid()
+plt.show()
